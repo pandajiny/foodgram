@@ -16,8 +16,8 @@ export function SavePlaceModal(props: {
 
   useEffect(() => {
     setName(place.name);
-    setDescription(""
-    setRate(1)
+    setDescription("");
+    setRate(1);
   }, [place]);
 
   async function handleSavePlace() {
