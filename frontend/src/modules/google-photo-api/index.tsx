@@ -1,15 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
+import NOT_FOUND from "../../images/not_found.jpg";
 
-export function Photo(props: { key: string; photoRef: string }) {
-  useEffect(() => {
-    getPhoto(props.photoRef);
-  }, []);
-
-  async function getPhoto(uri: string) {
-    const key = props.key;
-    const url = `https://maps.googleapis.com/maps/api/place/photo?photoreference=${photoRef}&key=${key}`;
-    const photo = await fetch(uri);
-    console.log(photo);
-  }
-  return <div>photo</div>;
+export function PhotoComponent(props: { url: string | null }) {
+  return (
+    <div className="photo-component">
+      <img src={props.url || NOT_FOUND}></img>
+    </div>
+  );
 }

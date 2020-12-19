@@ -30,6 +30,8 @@ export const getPlaceDetailHandler: RequestHandler = async function (
   return httpResponse(res, result);
 };
 
+// GET /users/:userId/places
+// result : SavedPlace[]
 export const getSavedPlaceHandler: RequestHandler = async function (
   req,
   res
@@ -45,11 +47,28 @@ export const getSavedPlaceHandler: RequestHandler = async function (
 };
 
 export const savePlaceController: RequestHandler = async function (req, res) {
-  const { userId, placeId } = req.params;
-  const { lat, lng, name }: SavePlaceRequestBody = req.body;
-  console.log(`save place request placeId :  ${placeId} || userID : ${userId}`);
+  const { userId } = req.params;
+  const {
+    lat,
+    lng,
+    name,
+    description,
+    rate,
+    placeId,
+  }: SavePlaceRequestBody = req.body;
+  console.log(
+    `save place request /  placeId :  ${placeId}, userID : ${userId}`
+  );
 
-  const request: SavePlaceRequest = { userId, placeId, lat, lng, name };
+  const request: SavePlaceRequest = {
+    userId,
+    placeId,
+    lat,
+    lng,
+    name,
+    description,
+    rate,
+  };
   if (isInvalidRequest(request)) {
     throw httpError(res, HttpStatus.BAD_REQUEST, `please fill the form`);
   }

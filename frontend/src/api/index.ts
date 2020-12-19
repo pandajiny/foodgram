@@ -1,5 +1,5 @@
 export * from "./auth";
-export * from "./places.api";
+export * from "./place/indexi";
 
 export const serverUrl = `http://${window.location.hostname}:5001`;
 

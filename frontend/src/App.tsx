@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
-import { NaverMap } from "./modules/react-naver-map";
-import { renderHTMLIcon, setMarker } from "./modules/react-naver-map/overlay";
-import { ActionPage } from "./pages/ActionPage";
-import { BrowserRouter, Route, Switch, useHistory } from "react-router-dom";
+import React from "react";
+import { Route, Switch, useHistory } from "react-router-dom";
 
 import { LoginPage } from "./pages/LoginPage";
+import { PATH } from "./constants";
+import { LoginRequire } from "./pages/LoginRequire";
+import { MainPage } from "./pages/MainPage";
+import { SignupPage } from "./pages/SignupPage";
 
 export function App() {
-  const history = useHistory();
-
   // const [mapCenter, setMapCenter] = useState<naver.maps.LatLng>();
   // const [mapZoomLevel, setMapZoom] = useState<number>();
 
@@ -52,24 +51,6 @@ export function App() {
           <div>404 not found</div>
         </Route>
       </Switch>
-    </div>
-  );
-}
-
-import PIN_ICON from "./images/icons/icon_pin.png";
-import "./styles/places/marker.scss";
-import { getSavedPlaces, getUser } from "./api";
-import { SetUserContext, UserContext } from "./ContextProvicer";
-import { MainPage } from "./pages/MainPage";
-import { LoginRequire } from "./pages/LoginRequire";
-import { PATH } from "./constants";
-import { SignupPage } from "./pages/SignupPage";
-function MarkerIcon(props: { place: SavedPlace }) {
-  const { place } = props;
-  return (
-    <div className="marker">
-      <label>{place.name}</label>
-      <img src={PIN_ICON} />
     </div>
   );
 }

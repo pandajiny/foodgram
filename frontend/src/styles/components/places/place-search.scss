@@ -1,11 +1,12 @@
 @use "../../colors.scss";
 
 .place-search-bar {
+  background-color: white;
   margin: 8px;
 
   border-radius: 16px;
 
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
   > .input-form {
     display: flex;

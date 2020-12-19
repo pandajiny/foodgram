@@ -3,12 +3,12 @@ import { getCookie } from "../../modules/document-module";
 
 export async function getUser(): Promise<User | null> {
   const token = getCookie("token");
-  console.log(token);
   if (!token) {
     return null;
   }
 
   const url = `${serverUrl}/auth/user`;
+  console.log(`request to ${url}`);
   const response = await fetch(url, {
     headers: {
       token,
@@ -50,7 +50,6 @@ export async function doLogin(request: LoginRequest): Promise<void> {
 
 export async function doSignup(request: SignupRequest): Promise<void> {
   const url = `${serverUrl}/auth/signup`;
-  console.log(url);
   console.log(`do signup`);
   const response = await fetch(url, {
     method: "POST",

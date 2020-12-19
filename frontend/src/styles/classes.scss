@@ -32,6 +32,11 @@ p {
   font-size: 16px;
 }
 
+label {
+  font-weight: 400;
+  font-size: 14px;
+}
+
 input {
   outline: none;
   border: none;
@@ -45,6 +50,32 @@ input {
 
 input::placeholder {
   font-size: 14px;
+}
+
+textarea {
+  border: none;
+  outline: none;
+  padding: 8px;
+}
+
+textarea::placeholder {
+  font-size: 14px;
+}
+
+select {
+  border: none;
+  outline: none;
+
+  font-size: 16px;
+  color: colors.$secondary-text-color;
+  cursor: pointer;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 6px 0 rgba(0, 0, 0, 0.1);
+
+  padding: 8px;
+  min-width: 120px;
+
+  border: 1px solid colors.$divider-color;
+  border-radius: 16px;
 }
 
 button {
