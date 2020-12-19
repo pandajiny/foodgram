@@ -1,0 +1,73 @@
+@use "./colors.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 400;
+  color: colors.$primary-text-color;
+}
+
+h1 {
+  font-size: 80px;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+h3 {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+p {
+  font-weight: 400;
+
+  font-size: 16px;
+}
+
+input {
+  outline: none;
+  border: none;
+  border-radius: 8px;
+
+  padding: 12px;
+  padding-left: 16px;
+
+  font-size: 14px;
+}
+
+input::placeholder {
+  font-size: 14px;
+}
+
+button {
+  border: none;
+  outline: none;
+  background: none;
+
+  font-family: inherit;
+  font-size: 20px !important;
+  font-weight: 700;
+
+  color: colors.$secondary-color;
+
+  padding: 4px;
+  margin: 4px;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.icon {
+  padding: 8px;
+  border-radius: 8px;
+  width: 24px;
+  height: 24px;
+}
