@@ -19,3 +19,8 @@ export function getCookie(key: string): string | null {
   const value = cookie.find((row) => row.startsWith(key))?.split("=")[1];
   return value || null;
 }
+
+export function getDateString(datetime: number): string {
+  const date = new Date(datetime);
+  return `${date.getMonth() + 1}/${date.getDate()}`;
+}

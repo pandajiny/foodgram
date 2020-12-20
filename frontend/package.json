@@ -6,7 +6,9 @@
   "scripts": {
     "start": "parcel src/public/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update-types": "cd src/types && (git add . && git commit -m '' && git push) & git pull"
+    "update-types": "cd src/types && (git add . && git commit -m '' && git push) & git pull",
+    "compile": "tsc --noEmit",
+    "compile:w": "tsc --noEmit -w"
   },
   "keywords": [],
   "author": "",

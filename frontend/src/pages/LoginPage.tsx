@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import EMAIL_ICON from "../images/icons/icon_email.png";
 import LOCK_ICON from "../images/icons/icon_lock.png";
@@ -15,6 +15,14 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    getUser().then((user) => {
+      if (user) {
+        history.push(PATH.MAIN);
+      }
+    });
+  }, []);
+
   function handleLogin() {
     const request: LoginRequest = { email, _password: password };
     doLogin(request).then(async () => {
@@ -22,7 +30,7 @@ export function LoginPage() {
       if (user && setUser) {
         console.log(`login passed / email : ${user.email}`);
         setUser(user);
-        history.push(PATH.MAIN);
+        history.push(PATH.DEFAULT);
       }
     });
   }

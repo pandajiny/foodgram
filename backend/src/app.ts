@@ -4,6 +4,7 @@ import { getAutoCompletionHandler } from "./autocompletes/autocomplete.handler";
 import {
   savePlaceController,
   getPlaceDetailHandler,
+  getSavedPlacesHandler,
   getSavedPlaceHandler,
 } from "./places/places.handler";
 import {
@@ -25,6 +26,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   console.log(req.ip);
   res.send("Server is running and connected");
+});
+app.get("/test", (req, res) => {
+  res.status(400).send("error");
 });
 
 // body : SignupRequest
@@ -49,12 +53,12 @@ app.get("/users");
 app.get("/users/:userId");
 app.post("/users");
 // result : SavedPlace[]
-app.get("/users/:userId/places", getSavedPlaceHandler);
+app.get("/users/:userId/places", getSavedPlacesHandler);
 // body : SavePlaceRequestBody
 // result : ActionResult
 app.post("/users/:userId/places/", savePlaceController);
 // result : SavedPlace
-app.get("/users/:userId/places/:placeId");
+app.get("/users/:userId/places/:placeId", getSavedPlaceHandler);
 app.get("/places");
 // result : PlaceResult
 app.get("/places/:placeId", getPlaceDetailHandler);

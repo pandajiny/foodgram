@@ -1,6 +1,6 @@
 import { createHmac } from "crypto";
 import { DB_NAME, doWriteQuery } from "../db/db.services";
-import { getSignupQuery } from "../db/query";
+import { getSignupQuery } from "../db/query/auth.query";
 import { JWT_SECRET, PASSWORD_HASH_SALT } from "../secrets";
 import { getUserData } from "../user/user.service";
 import jwt from "jsonwebtoken";

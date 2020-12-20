@@ -18,6 +18,19 @@ export async function getSavedPlaces(userId: string) {
   return result;
 }
 
+export async function getSavedPlace(
+  userId: string,
+  placeId: string
+): Promise<SavedPlace> {
+  const url = `${serverUrl}/users/${userId}/places/${placeId}`;
+  const result = await doGetRequest<SavedPlace>(url);
+  // .catch((e) => {
+  //   console.log(`errrrorrr`);
+  //   throw e;
+  // });
+  return result;
+}
+
 // POST /users/:userID/places
 // result : ActionResult
 export async function savePlace(

@@ -1,4 +1,4 @@
-import { DB_NAME, DB_TABLES, doGetQuery } from "../db.services";
+import { DB_TABLES } from "../db.services";
 
 export function getSelectUserQuery(args: {
   email?: string;

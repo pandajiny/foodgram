@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
-import SAVED_ICON from "../images/icons/icon_saved._white.png";
+import SAVED_ICON from "../images/icons/icon_saved_white.png";
 import CANCEL_ICON from "../images/icons/icon_cancel.png";
 import { getUser, savePlace } from "../api";
 

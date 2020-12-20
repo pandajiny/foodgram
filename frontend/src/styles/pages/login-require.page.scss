@@ -22,15 +22,16 @@
 
       display: grid;
       grid-template-columns: auto auto;
-      gap: 8px 4px;
+      gap: 4px 8px;
       text-align: right;
 
       h3 {
-        padding-top: 8px;
+        padding-top: 4px;
         color: colors.$secondary-text-color;
       }
 
       button {
+        margin: 0px;
         color: colors.$secondary-color;
       }
     }

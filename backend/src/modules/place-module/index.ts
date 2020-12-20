@@ -1,18 +1,18 @@
-import { v4 } from "uuid";
 import { DB_NAME, doGetQuery, doWriteQuery } from "../../db/db.services";
+import {
+  getInsertSavedPlaceQuery,
+  getSelectSavedPlaceQuery,
+  getSelectSavedPlacesQuery,
+} from "../../db/query/place.query";
 
-export async function savePlace(args: SavePlaceRequest): Promise<ActionResult> {
-  const { placeId, userId, lat, lng, name } = args;
+export async function savePlace(
+  request: SavePlaceRequest
+): Promise<ActionResult> {
   const dbName = DB_NAME.MAIN;
-  const id = getUniqueString();
-  const query = `
-        insert into saved_places (id, place_id, user_id, create_datetime, lat, lng, name)
-        values ("${id}", "${placeId}", "${userId}", ${getCurrentTime()}, "${lat}", "${lng}", "${name}");
-    `;
 
-  const writeResult = await doWriteQuery({ query, dbName }).catch((e) => {
-    throw e;
-  });
+  const query = getInsertSavedPlaceQuery(request);
+
+  const writeResult = await doWriteQuery({ query, dbName });
 
   return {
     ok: true,
@@ -22,24 +22,31 @@ export async function savePlace(args: SavePlaceRequest): Promise<ActionResult> {
 
 export async function getSavedPlaces(userId: string): Promise<SavedPlace[]> {
   const dbName = DB_NAME.MAIN;
-  const query = `
-    select * from saved_places where user_id = "${userId}";
-  `;
+  const query = getSelectSavedPlacesQuery({ userId });
 
   const getResult = await doGetQuery<SavedPlace>({
     query,
     dbName,
-  }).catch((e) => {
-    throw e;
   });
 
   return getResult;
 }
 
-function getUniqueString(): string {
-  return v4();
-}
+export async function getSavedPlace(
+  userId: string,
+  placeId: string
+): Promise<SavedPlace> {
+  const dbName = DB_NAME.MAIN;
+  const query = getSelectSavedPlaceQuery(userId, placeId);
 
-function getCurrentTime(): number {
-  return new Date().getTime();
+  const result = await doGetQuery<SavedPlace>({
+    query,
+    dbName,
+  });
+
+  if (result.length == 1) {
+    return result[0];
+  } else {
+    throw `saved place got problem / length : ${result.length} query : ${query}`;
+  }
 }

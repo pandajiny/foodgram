@@ -1,7 +1,11 @@
 import { RequestHandler } from "express";
 import { httpError, httpResponse, HttpStatus } from "../http/http.service";
 import { getPlaceDetail } from "../modules/google-place-search";
-import { getSavedPlaces, savePlace } from "../modules/place-module";
+import {
+  getSavedPlace,
+  getSavedPlaces,
+  savePlace,
+} from "../modules/place-module";
 import { isInvalidRequest } from "../place-controllers";
 
 export const getPlaceDetailHandler: RequestHandler = async function (
@@ -32,7 +36,7 @@ export const getPlaceDetailHandler: RequestHandler = async function (
 
 // GET /users/:userId/places
 // result : SavedPlace[]
-export const getSavedPlaceHandler: RequestHandler = async function (
+export const getSavedPlacesHandler: RequestHandler = async function (
   req,
   res
 ): Promise<HttpResponse<SavedPlace[]>> {
@@ -40,6 +44,20 @@ export const getSavedPlaceHandler: RequestHandler = async function (
   console.log(`saved place request from ${userId}`);
 
   const result = await getSavedPlaces(userId).catch((err) => {
+    throw httpError(res, HttpStatus.FORBIDDEN, err);
+  });
+
+  return httpResponse(res, result);
+};
+
+// GET /users/:userId/places/:placeId
+// result : SavedPlace
+export const getSavedPlaceHandler: RequestHandler = async function (
+  req,
+  res
+): Promise<HttpResponse<SavedPlace>> {
+  const { userId, placeId } = req.params;
+  const result = await getSavedPlace(userId, placeId).catch((err) => {
     throw httpError(res, HttpStatus.FORBIDDEN, err);
   });
 

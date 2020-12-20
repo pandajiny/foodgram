@@ -8,6 +8,7 @@ export const DB_NAME = {
 
 export const DB_TABLES = {
   USERS: "users",
+  SAVED_PLACES: "saved_places",
 };
 
 function getConnectionConfig(dbName: string): ConnectionConfig {
@@ -22,6 +23,10 @@ function getConnectionConfig(dbName: string): ConnectionConfig {
 
 export function getUniqueString(): string {
   return uniqueString();
+}
+
+export function getCurrentTime(): number {
+  return new Date().getTime();
 }
 
 export async function doGetQuery<T>(args: {

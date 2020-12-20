@@ -48,6 +48,10 @@ export async function doLogin(request: LoginRequest): Promise<void> {
   }
 }
 
+export async function doLogout() {
+  document.cookie = `token=`;
+}
+
 export async function doSignup(request: SignupRequest): Promise<void> {
   const url = `${serverUrl}/auth/signup`;
   console.log(`do signup`);

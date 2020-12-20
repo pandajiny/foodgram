@@ -4,7 +4,7 @@ import EMAIL_ICON from "../images/icons/icon_email.png";
 import LOCK_ICON from "../images/icons/icon_lock.png";
 import PROFILE_ICON from "../images/icons/icon_profile.png";
 import { PATH } from "../constants";
-import { doSignup } from "../api";
+import { doLogin, doSignup } from "../api";
 
 export function SignupPage() {
   const history = useHistory();
@@ -21,7 +21,18 @@ export function SignupPage() {
       _password: password,
     };
 
-    doSignup(request);
+    doSignup(request)
+      .catch(() => {
+        setTitle("계정 생성 실패");
+      })
+      .then(() =>
+        doLogin({
+          email: request.email,
+          _password: request._password,
+        }).then(() => {
+          history.push(PATH.MAIN);
+        })
+      );
   }
 
   return (

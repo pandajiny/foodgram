@@ -1,6 +1,16 @@
 @use "../../colors.scss";
 
 .place-detail {
+  .close-icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    padding: 8px;
+    margin-left: 4px;
+    margin-top: 4px;
+    cursor: pointer;
+  }
+
   > .photo-component {
     height: 300px;
     overflow: hidden;
@@ -43,6 +53,18 @@
 
       > label {
         padding-top: 2px;
+      }
+    }
+  }
+
+  > .details {
+    margin-top: 16px;
+
+    > .review {
+      padding: 8px;
+      > p {
+        padding-left: 16px;
+        color: colors.$secondary-text-color;
       }
     }
   }
