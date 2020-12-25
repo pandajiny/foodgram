@@ -9,8 +9,7 @@ import { PhotoComponent } from "../../modules/google-photo-api";
 import { PlaceInformation } from "./PlaceInformation";
 import CLOSE_ICON from "../../images/icons/icon_cancel_white.png";
 import { PATH } from "../../constants";
-import { SavedPlace } from "./SavedPlace";
-import { getDateString } from "../../modules/document-module";
+import { PlaceReview } from "./PlaceReview";
 
 interface PlaceDetailProps {
   onPlaceSelected: (place: google.maps.places.PlaceResult) => void;
@@ -32,6 +31,7 @@ export function PlaceDetail(props: PlaceDetailProps) {
   }, [placeId]);
 
   async function checkIsSaved(place?: google.maps.places.PlaceResult) {
+    console.log(`place`);
     const user = await getUser();
     if (user?.userId && place?.place_id) {
       getSavedPlace(user.userId, place.place_id)
@@ -40,6 +40,7 @@ export function PlaceDetail(props: PlaceDetailProps) {
           setSavedPlace(place);
         })
         .catch(() => {
+          console.log(`not saved`);
           props.onPlaceSelected(place);
         });
     }
@@ -59,6 +60,7 @@ export function PlaceDetail(props: PlaceDetailProps) {
   }, [place]);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   if (place) {
     return (
@@ -69,6 +71,8 @@ export function PlaceDetail(props: PlaceDetailProps) {
           onCancel={() => {
             setIsSaving(false);
           }}
+          savedPlace={savedPlace}
+          isEdit={isEdit || undefined}
         />
         <img
           className="close-icon"
@@ -90,7 +94,6 @@ export function PlaceDetail(props: PlaceDetailProps) {
           </div>
         </div>
         <div className="details">
-          {console.log(place)}
           {place.formatted_address && (
             <PlaceInformation
               type="LOCATION"
@@ -118,7 +121,13 @@ export function PlaceDetail(props: PlaceDetailProps) {
           {savedPlace && (
             <div className="review">
               <p>저장된 리뷰</p>
-              <SavedPlace place={savedPlace} />
+              <PlaceReview
+                place={savedPlace}
+                onEditCallback={function () {
+                  setIsSaving(true);
+                  setIsEdit(true);
+                }}
+              />
             </div>
           )}
         </div>

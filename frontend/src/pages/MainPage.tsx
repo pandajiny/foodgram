@@ -17,16 +17,6 @@ export function MainPage() {
   // user state
   const [user, setUser] = useState<User | null>();
 
-  // get user information
-  useEffect(() => {
-    getUser().then((u) => setUser(u));
-  }, []);
-
-  // load saved places
-  useEffect(() => {
-    loadSavedPlaces();
-  }, [user]);
-
   // dom state
   const [title, setTitle] = useState("어서오세요 !");
   const [isSearch, setIsSearch] = useState(false);
@@ -39,6 +29,18 @@ export function MainPage() {
   const [place, setPlace] = useState<google.maps.places.PlaceResult>();
 
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
+
+  console.log(map, title);
+
+  // get user information
+  useEffect(() => {
+    getUser().then((u) => setUser(u));
+  }, []);
+
+  // load saved places
+  useEffect(() => {
+    loadSavedPlaces();
+  }, [user]);
 
   // update marker when place updated
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { doGetRequest, doPostRequest, serverUrl } from "..";
+import { doGetRequest, doPostRequest, doPutRequest, serverUrl } from "..";
 
 export async function getPlaceDetail(args: {
   placeId: string;
@@ -40,6 +40,18 @@ export async function savePlace(
   const body: SavePlaceRequestBody = request;
 
   const result = await doPostRequest<ActionResult>({
+    url,
+    body,
+  });
+
+  return result;
+}
+
+export async function editSavedPlace(place: SavedPlace) {
+  const url = `${serverUrl}/users/${place.user_id}/places/${place.id}`;
+  const body = place;
+
+  const result = await doPutRequest<ActionResult>({
     url,
     body,
   });

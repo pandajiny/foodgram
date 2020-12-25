@@ -3,6 +3,7 @@ import {
   getInsertSavedPlaceQuery,
   getSelectSavedPlaceQuery,
   getSelectSavedPlacesQuery,
+  getUpdateSavedPlaceQuery,
 } from "../../db/query/place.query";
 
 export async function savePlace(
@@ -49,4 +50,19 @@ export async function getSavedPlace(
   } else {
     throw `saved place got problem / length : ${result.length} query : ${query}`;
   }
+}
+
+export async function editSavedPlace(place: SavedPlace): Promise<ActionResult> {
+  const dbName = DB_NAME.MAIN;
+  const query = getUpdateSavedPlaceQuery(place);
+
+  const result = await doWriteQuery({
+    query,
+    dbName,
+  });
+
+  return {
+    ok: true,
+    message: `successfully edit place`,
+  };
 }

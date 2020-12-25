@@ -43,3 +43,20 @@ export function getSelectSavedPlaceQuery(
     `;
   return query;
 }
+
+export function getUpdateSavedPlaceQuery(place: SavedPlace): string {
+  const { description, id, lat, lng, name, place_id, rate, user_id } = place;
+  const createDatetime = getCurrentTime();
+  // only change datetime, description and rate
+  const query = `
+    UPDATE ${DB_TABLES.SAVED_PLACES}
+
+    SET
+    create_datetime = ${createDatetime},
+    description = "${description}",
+    rate = ${rate}
+
+    WHERE id = "${id}";
+  `;
+  return query;
+}

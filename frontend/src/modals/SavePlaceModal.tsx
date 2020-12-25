@@ -1,18 +1,24 @@
 import React, { useEffect, useReducer, useState } from "react";
 import SAVED_ICON from "../images/icons/icon_saved_white.png";
 import CANCEL_ICON from "../images/icons/icon_cancel.png";
-import { getUser, savePlace } from "../api";
+import { editSavedPlace, getUser, savePlace } from "../api";
 
 export function SavePlaceModal(props: {
   place: google.maps.places.PlaceResult;
+  savedPlace?: SavedPlace;
   onCancel: () => void;
   isActive: boolean;
+  isEdit?: true;
 }) {
-  const { place, isActive } = props;
+  const { place, isActive, isEdit, savedPlace } = props;
 
   const [name, setName] = useState(place.name);
   const [description, setDescription] = useState("");
-  const [rate, setRate] = useState(1);
+  const [rate, setRate] = useState(savedPlace?.rate || 1);
+  useEffect(() => {
+    setDescription(savedPlace?.description || "");
+    setRate(savedPlace?.rate || 1);
+  }, [savedPlace]);
 
   useEffect(() => {
     setName(place.name);
@@ -35,7 +41,17 @@ export function SavePlaceModal(props: {
         rate,
         description,
       };
-      savePlace(request).then(props.onCancel);
+      if (isEdit) {
+        if (!savedPlace) {
+          throw new Error(`cannot get saved place information`);
+        } else {
+          savedPlace.description = description;
+          savedPlace.rate = rate;
+          editSavedPlace(savedPlace).then(props.onCancel);
+        }
+      } else {
+        savePlace(request).then(props.onCancel);
+      }
     }
   }
   if (!isActive) {
@@ -49,7 +65,7 @@ export function SavePlaceModal(props: {
             <h3 className="address">{place.formatted_address}</h3>
             <div className="icon-container" onClick={handleSavePlace}>
               <img className="icon" src={SAVED_ICON}></img>
-              <label>완료</label>
+              <label>{isEdit ? `수정` : `저장`}</label>
             </div>
           </div>
           <div className="form">

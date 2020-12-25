@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { httpError, httpResponse, HttpStatus } from "../http/http.service";
 import { getPlaceDetail } from "../modules/google-place-search";
 import {
+  editSavedPlace,
   getSavedPlace,
   getSavedPlaces,
   savePlace,
@@ -96,5 +97,28 @@ export const savePlaceController: RequestHandler = async function (req, res) {
   });
 
   console.log(`saving place done`);
+  return httpResponse(res, result);
+};
+
+export const editSavedPlaceController: RequestHandler = async function (
+  req,
+  res
+) {
+  const place = req.body as SavedPlace;
+  console.log(
+    `edit place request / userId : ${place.user_id} / place_name : ${place.name}`
+  );
+  if (isInvalidRequest(place)) {
+    throw httpError(res, HttpStatus.BAD_REQUEST, `please fill the form`);
+  }
+
+  const result = await editSavedPlace(place).catch((err) => {
+    throw httpError(
+      res,
+      HttpStatus.FORBIDDEN,
+      `cannot edit saved place : ${err}`
+    );
+  });
+
   return httpResponse(res, result);
 };

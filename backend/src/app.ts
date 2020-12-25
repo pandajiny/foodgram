@@ -6,6 +6,7 @@ import {
   getPlaceDetailHandler,
   getSavedPlacesHandler,
   getSavedPlaceHandler,
+  editSavedPlaceController,
 } from "./places/places.handler";
 import {
   authUserHandler,
@@ -59,6 +60,7 @@ app.get("/users/:userId/places", getSavedPlacesHandler);
 app.post("/users/:userId/places/", savePlaceController);
 // result : SavedPlace
 app.get("/users/:userId/places/:placeId", getSavedPlaceHandler);
+app.put("/users/:userId/places/:placeId", editSavedPlaceController);
 app.get("/places");
 // result : PlaceResult
 app.get("/places/:placeId", getPlaceDetailHandler);

@@ -25,17 +25,20 @@ export function App() {
           <MainPage />
         </Route>
         <Route exact path={PATH.DEFAULT}>
-          <DefaultRoute />
+          <Default />
         </Route>
         <Route>
-          <div>404 not found</div>
+          <NotFoundPage />
         </Route>
       </Switch>
     </div>
   );
 }
 
-function DefaultRoute() {
+function NotFoundPage() {
+  return <div>404 not found</div>;
+}
+function Default() {
   const history = useHistory();
   useEffect(() => {
     getUser().then((u) => {
