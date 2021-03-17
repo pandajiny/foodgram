@@ -1,0 +1,36 @@
+@use '../../colors.scss';
+.user-state {
+  background-color: colors.$primary-color;
+  color: white;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+
+  > .account-container {
+    padding-top: 8px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    > .icon {
+      padding: 4px;
+      width: 16px;
+      height: 16px;
+    }
+    > label {
+      flex: 1;
+    }
+
+    > button {
+      align-self: flex-end;
+      color: white;
+      font-size: 14px !important;
+    }
+  }
+
+  > button {
+    align-self: flex-end;
+    color: white;
+    font-size: 14px !important;
+  }
+}

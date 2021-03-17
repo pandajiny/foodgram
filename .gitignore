@@ -1,0 +1,4 @@
+database
+*secrets*
+.env
+shared

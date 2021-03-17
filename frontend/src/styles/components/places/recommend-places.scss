@@ -1,0 +1,21 @@
+@use '../../colors.scss';
+
+.recommend-places {
+  padding: 8px;
+  overflow: scroll;
+
+  > .title {
+    padding: 8px;
+
+    color: colors.$secondary-text-color;
+  }
+}
+.recommend-places::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.recommend-places {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
