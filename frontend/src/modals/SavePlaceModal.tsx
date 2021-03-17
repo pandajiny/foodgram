@@ -1,24 +1,32 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SAVED_ICON from "../images/icons/icon_saved_white.png";
 import CANCEL_ICON from "../images/icons/icon_cancel.png";
-import { editSavedPlace, getUser, savePlace } from "../api";
+import { editSavedPlace, savePlace } from "../api";
+import { useSelector } from "react-redux";
+import { RootState } from "../modules/store";
 
-export function SavePlaceModal(props: {
-  place: google.maps.places.PlaceResult;
-  savedPlace?: SavedPlace;
+interface SavePlaceModalProps {
+  place: Place;
+  myPlace?: UserPlace;
   onCancel: () => void;
   isActive: boolean;
   isEdit?: true;
-}) {
-  const { place, isActive, isEdit, savedPlace } = props;
-
+}
+export function SavePlaceModal({
+  isActive,
+  onCancel,
+  place,
+  isEdit,
+  myPlace,
+}: SavePlaceModalProps) {
+  const user = useSelector((state: RootState) => state.userReducer.user);
   const [name, setName] = useState(place.name);
   const [description, setDescription] = useState("");
-  const [rate, setRate] = useState(savedPlace?.rate || 1);
+  const [rate, setRate] = useState(myPlace?.rate || 1);
   useEffect(() => {
-    setDescription(savedPlace?.description || "");
-    setRate(savedPlace?.rate || 1);
-  }, [savedPlace]);
+    setDescription(myPlace?.description || "");
+    setRate(myPlace?.rate || 1);
+  }, [myPlace]);
 
   useEffect(() => {
     setName(place.name);
@@ -27,30 +35,24 @@ export function SavePlaceModal(props: {
   }, [place]);
 
   async function handleSavePlace() {
-    const lat = place.geometry?.location.lat;
-    const lng = place.geometry?.location.lng;
-    const placeId = place.place_id;
-    const user = await getUser();
-    if (lat && lng && placeId && user?.userId) {
-      const request: SavePlaceRequest = {
-        userId: user.userId,
-        lat,
-        lng,
-        name,
-        placeId,
+    const { address, id, lat, lng, name, phone_number } = place;
+    if (lat && lng && id && user?.uid) {
+      const request: RequestSavePlace = {
+        userId: user.uid,
+        placeId: id,
         rate,
         description,
       };
       if (isEdit) {
-        if (!savedPlace) {
+        if (!myPlace) {
           throw new Error(`cannot get saved place information`);
         } else {
-          savedPlace.description = description;
-          savedPlace.rate = rate;
-          editSavedPlace(savedPlace).then(props.onCancel);
+          myPlace.description = description;
+          myPlace.rate = rate;
+          editSavedPlace(myPlace).then(onCancel);
         }
       } else {
-        savePlace(request).then(props.onCancel);
+        savePlace(request).then(onCancel);
       }
     }
   }
@@ -62,7 +64,7 @@ export function SavePlaceModal(props: {
         <div className="content">
           <div className="header">
             <h2 className="title">{place.name}</h2>
-            <h3 className="address">{place.formatted_address}</h3>
+            <h3 className="address">{place.address}</h3>
             <div className="icon-container" onClick={handleSavePlace}>
               <img className="icon" src={SAVED_ICON}></img>
               <label>{isEdit ? `수정` : `저장`}</label>
@@ -91,11 +93,7 @@ export function SavePlaceModal(props: {
               placeholder="식당에 대한 설명을 적어주세요."
             ></textarea>
           </div>
-          <img
-            className="cancel-icon"
-            src={CANCEL_ICON}
-            onClick={props.onCancel}
-          />
+          <img className="cancel-icon" src={CANCEL_ICON} onClick={onCancel} />
         </div>
       </div>
     );

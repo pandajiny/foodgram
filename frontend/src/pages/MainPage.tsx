@@ -1,95 +1,95 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
-import { doLogout, getSavedPlaces, getUser } from "../api";
+import {
+  Route,
+  Switch,
+  useHistory,
+  useLocation,
+  useParams,
+} from "react-router-dom";
+import { doLogout, getPlaceDetail, getSavedPlaces, getUser } from "../api";
 import { PlaceSearchBar } from "../components/places/PlaceSearchBar";
-import { PATH } from "../constants";
-import { NaverMap } from "../modules/react-naver-map";
+import { DEFAULT_PATH, PLACE_DETAIL_PATH } from "../constants";
+import { NaverMap, NaverMapOptions } from "../modules/react-naver-map";
 import { NAVER_CLIENT_ID } from "../secrets";
 
 import SEARCH_ICON from "../images/icons/icon_search_gray.png";
 import { PlaceDetail } from "../components/places/PlaceDetail";
 import { UserState } from "../components/user/UserState";
 import { RecommendPlaces } from "../components/places/RecommendPlaces";
+import { useSelector } from "react-redux";
+import { RootState } from "../modules/store";
+import { FoodgramService } from "../App";
 
 export function MainPage() {
+  const user = useSelector((state: RootState) => state.userReducer.user);
+
   const history = useHistory();
+  const { placeId } = useParams() as {
+    placeId?: string;
+  };
+  function goPlace(placeId: string) {
+    history.push(`/places/${placeId}`);
+    setIsSearch(false);
+  }
 
-  // user state
-  const [user, setUser] = useState<User | null>();
-
-  // dom state
-  const [title, setTitle] = useState("어서오세요 !");
-  const [isSearch, setIsSearch] = useState(false);
-
-  // map state
-  const [map, setMap] = useState<naver.maps.Map>();
-  const [mapZoom, setMapZoom] = useState(11);
-  const [mapCenter, setMapCenter] = useState<naver.maps.LatLng>();
-  const [markers, setMarkers] = useState<MarkerProps[]>([]);
-  const [place, setPlace] = useState<google.maps.places.PlaceResult>();
-
-  const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
-
-  console.log(map, title);
-
-  // get user information
   useEffect(() => {
-    getUser().then((u) => setUser(u));
-  }, []);
+    if (placeId) {
+      getPlaceDetail({ placeId }).then(setPlace);
+    }
+  }, [placeId]);
+
+  const [isSearch, setIsSearch] = useState(false);
+  const [place, setPlace] = useState<Place>();
+  const [myPlaces, setMyPlaces] = useState<UserPlace[]>([]);
+  const [mapOptions, setMapOptions] = useState<NaverMapOptions>({});
 
   // load saved places
   useEffect(() => {
-    loadSavedPlaces();
+    if (user) {
+      getMyPlaces().then(setMyPlaces);
+    }
   }, [user]);
 
   // update marker when place updated
   useEffect(() => {
-    if (place && place.geometry) {
-      history.push(`${PATH.MAIN}/${place.place_id}`);
+    if (place && place.lat && place.lng) {
+      history.push(`/places/${place.id}`);
+      updateMap(place);
     } else {
-      loadSavedPlaces();
+      updateMap(null);
     }
   }, [place]);
 
-  useEffect(() => {
-    const markers = savedPlaces.map((place) => {
+  async function getMyPlaces(): Promise<UserPlace[]> {
+    if (user?.uid) {
+      return await FoodgramService.get(`/users/${user.uid}/places`).then(
+        (resp) => resp.data
+      );
+    } else {
+      throw `User not logged in`;
+    }
+  }
+
+  function updateMap(place: Place | null) {
+    if (place && place.lat && place.lng) {
       const position = new naver.maps.LatLng(place.lat, place.lng);
       const marker: MarkerProps = {
         title: place.name,
         position,
-        type: "SAVED_PLACE",
-      };
-      return marker;
-    });
-    setMarkers(markers);
-  }, [savedPlaces]);
-
-  function loadSavedPlaces() {
-    if (!user) {
-      return;
-    }
-
-    getSavedPlaces(user.userId).then((places) => {
-      setSavedPlaces(places);
-    });
-  }
-
-  function handlePlaceSelected(place: google.maps.places.PlaceResult) {
-    if (place.geometry) {
-      const position = new naver.maps.LatLng(
-        place.geometry.location.lat,
-        place.geometry.location.lng
-      );
-      const marker: MarkerProps = {
-        title: place.name,
-        position,
-        address: place.formatted_address,
+        address: place.address || "",
         type: "DEFAULT",
       };
 
-      setMapZoom(16);
-      setMapCenter(position);
-      setMarkers((prev) => [...prev, marker]);
+      setMapOptions({
+        center: position,
+        markers: [marker],
+        zoom: 16,
+      });
+    } else {
+      setMapOptions((prev) => {
+        prev.markers = [];
+        return prev;
+      });
     }
   }
 
@@ -114,31 +114,22 @@ export function MainPage() {
               onBlur={() => {
                 setIsSearch(false);
               }}
-              onSelect={(place) => {
-                setPlace(place);
-                setTitle("");
-                setIsSearch(false);
-              }}
+              onSelect={goPlace}
             />
           )}
         </div>
         <Switch>
-          <Route path={PATH.PLACE_DETAIL}>
+          <Route path={PLACE_DETAIL_PATH}>
             <PlaceDetail
-              onPlaceSelected={handlePlaceSelected}
-              onClosed={() => setPlace(undefined)}
-            />
-          </Route>
-          <Route exact path={PATH.MAIN}>
-            <UserState
-              user={user}
-              doLogout={() => {
-                doLogout();
-                setUser(null);
-                location.reload();
+              onPlaceSelected={setPlace}
+              onClosed={() => {
+                history.push(DEFAULT_PATH);
               }}
             />
-            <RecommendPlaces places={savedPlaces} />
+          </Route>
+          <Route exact path={DEFAULT_PATH}>
+            <UserState user={user} />
+            <RecommendPlaces places={myPlaces} />
           </Route>
         </Switch>
       </div>
@@ -146,14 +137,22 @@ export function MainPage() {
         <NaverMap
           $elementId="naver-map"
           clientId={NAVER_CLIENT_ID}
-          width="100%"
-          height="100%"
-          markers={markers}
-          center={mapCenter}
-          zoom={mapZoom}
-          onInitialized={setMap}
+          options={mapOptions}
         />
       </div>
     </div>
   );
 }
+
+// useEffect(() => {
+//   const markers = savedPlaces.map((place) => {
+//     const position = new naver.maps.LatLng(place.lat, place.lng);
+//     const marker: MarkerProps = {
+//       title: place.name,
+//       position,
+//       type: "SAVED_PLACE",
+//     };
+//     return marker;
+//   });
+//   setMarkers(markers);
+// }, [savedPlaces]);

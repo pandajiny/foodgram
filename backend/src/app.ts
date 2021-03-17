@@ -1,46 +1,41 @@
 import express from "express";
 import cors from "cors";
-import { getAutoCompletionHandler } from "./autocompletes/autocomplete.handler";
-import {
-  savePlaceController,
-  getPlaceDetailHandler,
-  getSavedPlacesHandler,
-  getSavedPlaceHandler,
-  editSavedPlaceController,
-} from "./places/places.handler";
-import {
-  authUserHandler,
-  loginHandler,
-  signupHandler,
-} from "./auth/auth.handler";
-import { validJWT } from "./auth/auth.service";
-import { httpError, HttpStatus } from "./http/http.service";
-import { getPhotoHandler } from "./photo/photo.handler";
+import { getPhotoHandler } from "./routers/photo/photo.handler";
+import { UserRouter } from "./routers/user";
+import session from "express-session";
+import { CLIENT_URL, SessionOpts } from "./constants";
+import { exceptionHandler } from "./modules/http";
+import { AutocompletesRouter as AutocompleteRouter } from "./routers/autocompletes";
+import { PlaceRouter } from "./routers/places";
+import bodyParser from "body-parser";
 
 export const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(
+  cors({
+    credentials: true,
+    origin: CLIENT_URL,
+  })
+);
+app.use(session(SessionOpts));
 
-// REST APIs
-
-app.get("/", (req, res) => {
-  console.log(req.ip);
-  res.send("Server is running and connected");
+app.use((req, res, next) => {
+  console.log(req.path);
+  next();
 });
-app.get("/test", (req, res) => {
-  res.status(400).send("error");
-});
 
-// body : SignupRequest
-// result : null
-app.post("/auth/signup", signupHandler);
-// body : LoginRequest
-// result : LoginResult
-app.post("/auth/login", loginHandler);
-// headers : token
-// result : user
-app.get("/auth/user", authUserHandler);
+app.use("/users", UserRouter);
+app.use("/autocompletes", AutocompleteRouter);
+app.use("/places", PlaceRouter);
+//  params : photoRef
+// result : PhotoResult
+app.get("/photos/:photoRef", getPhotoHandler);
+app.use(exceptionHandler);
+app.use((req, res, next) => {
+  console.log(`${req.path} has finished`);
+  next();
+});
 
 // app.use("/users", (req, res, next) => {
 //   const token = req.headers.token;
@@ -50,23 +45,3 @@ app.get("/auth/user", authUserHandler);
 //   validJWT(token);
 //   next();
 // });
-app.get("/users");
-app.get("/users/:userId");
-app.post("/users");
-// result : SavedPlace[]
-app.get("/users/:userId/places", getSavedPlacesHandler);
-// body : SavePlaceRequestBody
-// result : ActionResult
-app.post("/users/:userId/places/", savePlaceController);
-// result : SavedPlace
-app.get("/users/:userId/places/:placeId", getSavedPlaceHandler);
-app.put("/users/:userId/places/:placeId", editSavedPlaceController);
-app.get("/places");
-// result : PlaceResult
-app.get("/places/:placeId", getPlaceDetailHandler);
-// ?input=[장소이름]
-// result : AutocompletePrediction[]
-app.get("/autocomplete", getAutoCompletionHandler);
-//  params : photoRef
-// result : PhotoResult
-app.get("/photos/:photoRef", getPhotoHandler);

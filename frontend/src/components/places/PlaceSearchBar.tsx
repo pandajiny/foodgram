@@ -1,22 +1,36 @@
 import React, { useState } from "react";
 import { getPlaceDetail } from "../../api";
-import { getAutocompletions } from "../../api/autocomplete.api";
-import {
-  setChangeListener,
-  setEnterKeyPressListener,
-} from "../../modules/document-module";
+import { setChangeListener, onEnter } from "../../modules/document-module";
 import SEARCH_ICON from "../../images/icons/icon_search_gray.png";
 import CANCEL_ICON from "../../images/icons/icon_cancel.png";
+import { FoodgramService } from "../../App";
 
-export function PlaceSearchBar(props: {
+interface SearchBarProps {
   onBlur?: () => void;
   placeholder?: string;
-  onSelect: (place: google.maps.places.PlaceResult) => void;
-}) {
-  const [input, setInput] = useState(props.placeholder || "");
+  onSelect: (placeId: string) => void;
+}
+
+export function PlaceSearchBar({
+  onSelect,
+  onBlur,
+  placeholder,
+}: SearchBarProps) {
+  const [input, setInput] = useState(placeholder || "");
   const [predictions, setPredictions] = useState<
     google.maps.places.AutocompletePrediction[]
   >([]);
+
+  async function getAutocompletes(input: string) {
+    return await FoodgramService.get<Autocomplete[]>("/autocompletes", {
+      params: { input },
+    })
+      .then((resp) => resp.data)
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      });
+  }
 
   return (
     <div className="place-search-bar">
@@ -27,16 +41,10 @@ export function PlaceSearchBar(props: {
           placeholder="장소를 입력하세요"
           onChange={(ev) => setChangeListener(ev, setInput)}
           onKeyPress={(ev) =>
-            setEnterKeyPressListener(ev, () =>
-              getAutocompletions({ input }).then(setPredictions)
-            )
+            onEnter(ev, () => getAutocompletes(input).then(setPredictions))
           }
         ></input>
-        <img
-          className="cancel-icon"
-          src={CANCEL_ICON}
-          onClick={props.onBlur}
-        ></img>
+        <img className="cancel-icon" src={CANCEL_ICON} onClick={onBlur}></img>
       </div>
       {predictions.length > 0 && (
         <div className="autocomplete-list">
@@ -44,12 +52,7 @@ export function PlaceSearchBar(props: {
             <div
               key={Math.random()}
               onClick={() => {
-                const placeId = prediction.place_id;
-                getPlaceDetail({ placeId }).then((place) => {
-                  setInput("");
-                  setPredictions([]);
-                  props.onSelect(place);
-                });
+                onSelect(prediction.place_id);
               }}
             >
               <PredictionItem prediction={prediction} />

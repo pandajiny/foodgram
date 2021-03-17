@@ -1,9 +1,8 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { PATH } from "../../constants";
 import { getDateString } from "../../modules/document-module";
 
-export function SavedPlace(props: { place: SavedPlace }) {
+export function SavedPlace(props: { place: UserPlace }) {
   const { place } = props;
   const { description } = place;
   const history = useHistory();
@@ -12,7 +11,7 @@ export function SavedPlace(props: { place: SavedPlace }) {
     <div
       className="saved-place"
       onClick={() => {
-        history.push(`${PATH.MAIN}/${place.place_id}`);
+        history.push(`/places/${place.placeId}`);
       }}
     >
       <p className="date">{getDateString(place.create_datetime)}</p>

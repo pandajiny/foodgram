@@ -1,16 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
 import "./styles/style.scss";
 import { App } from "./App";
-import { ContextProvider } from "./ContextProvicer";
-import { BrowserRouter } from "react-router-dom";
+import { ProviderWrapper } from "./Provider";
+import { handleGithubPages } from "./Router";
+
+handleGithubPages(window.location);
 
 ReactDOM.render(
-  <ContextProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </ContextProvider>,
+  <ProviderWrapper>
+    <App />
+  </ProviderWrapper>,
   document.getElementById("root")
 );

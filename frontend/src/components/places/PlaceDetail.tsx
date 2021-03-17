@@ -8,18 +8,23 @@ import { SavePlaceModal } from "../../modals/SavePlaceModal";
 import { PhotoComponent } from "../../modules/google-photo-api";
 import { PlaceInformation } from "./PlaceInformation";
 import CLOSE_ICON from "../../images/icons/icon_cancel_white.png";
-import { PATH } from "../../constants";
+import { RootState } from "../../modules/store";
 import { PlaceReview } from "./PlaceReview";
+import { useSelector } from "react-redux";
 
 interface PlaceDetailProps {
-  onPlaceSelected: (place: google.maps.places.PlaceResult) => void;
+  onPlaceSelected: (place: Place) => void;
   onClosed: () => void;
 }
-export function PlaceDetail(props: PlaceDetailProps) {
+export function PlaceDetail({ onClosed, onPlaceSelected }: PlaceDetailProps) {
   const history = useHistory();
+  const user = useSelector((state: RootState) => {
+    state.userReducer.user;
+  });
   const { placeId } = useParams<Record<string, string | undefined>>();
-  const [place, setPlace] = useState<google.maps.places.PlaceResult>();
-  const [savedPlace, setSavedPlace] = useState<SavedPlace>();
+  const [place, setPlace] = useState<Place>();
+  const [myPlace, setMyPlace] = useState<UserPlace>();
+
   // get place detail
   useEffect(() => {
     if (placeId) {
@@ -31,33 +36,33 @@ export function PlaceDetail(props: PlaceDetailProps) {
   }, [placeId]);
 
   async function checkIsSaved(place?: google.maps.places.PlaceResult) {
-    console.log(`place`);
-    const user = await getUser();
-    if (user?.userId && place?.place_id) {
-      getSavedPlace(user.userId, place.place_id)
-        .then((place) => {
-          console.log(`this place is saved`);
-          setSavedPlace(place);
-        })
-        .catch(() => {
-          console.log(`not saved`);
-          props.onPlaceSelected(place);
-        });
-    }
+    // console.log(`place`);
+    // const user = await getUser();
+    // if (user?.userId && place?.place_id) {
+    //   getSavedPlace(user.userId, place.place_id)
+    //     .then((place) => {
+    //       console.log(`this place is saved`);
+    //       setSavedPlace(place);
+    //     })
+    //     .catch(() => {
+    //       console.log(`not saved`);
+    //       props.onPlaceSelected(place);
+    //     });
+    // }
   }
 
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  useEffect(() => {
-    const photo = place?.photos && place?.photos[0];
-    if (photo) {
-      const photoRef = photo.photo_reference;
-      getPhoto(photoRef).then((result) => {
-        setPhotoUrl(result.url);
-      });
-    } else {
-      setPhotoUrl(null);
-    }
-  }, [place]);
+  // useEffect(() => {
+  //   const photo = place?.photos && place?.photos[0];
+  //   if (photo) {
+  //     const photoRef = photo.photo_reference;
+  //     getPhoto(photoRef).then((result) => {
+  //       setPhotoUrl(result.url);
+  //     });
+  //   } else {
+  //     setPhotoUrl(null);
+  //   }
+  // }, [place]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -71,58 +76,53 @@ export function PlaceDetail(props: PlaceDetailProps) {
           onCancel={() => {
             setIsSaving(false);
           }}
-          savedPlace={savedPlace}
+          myPlace={myPlace}
           isEdit={isEdit || undefined}
         />
         <img
           className="close-icon"
           src={CLOSE_ICON}
           onClick={function () {
-            history.push(PATH.MAIN);
-            props.onClosed();
+            onClosed();
           }}
         />
         <PhotoComponent url={photoUrl} />
         <div className="summary">
           <h3 className="description">{place.name}</h3>
           <p className="address">
-            {place.vicinity || "등록된 주소가 없습니다."}
+            {place.address || "등록된 주소가 없습니다."}
           </p>
           <div className="save-button" onClick={() => setIsSaving(true)}>
-            <img className="icon" src={savedPlace ? SavedIcon : SaveIcon}></img>
-            <label>{savedPlace ? "저장됨" : "저장하기"}</label>
+            <img className="icon" src={myPlace ? SavedIcon : SaveIcon}></img>
+            <label>{myPlace ? "저장됨" : "저장하기"}</label>
           </div>
         </div>
         <div className="details">
-          {place.formatted_address && (
-            <PlaceInformation
-              type="LOCATION"
-              content={place.formatted_address}
-            />
+          {place.address && (
+            <PlaceInformation type="LOCATION" content={place.address} />
           )}
-          {place.formatted_phone_number && (
-            <PlaceInformation
-              type="PHONE"
-              content={place.formatted_phone_number}
-            />
+          {place.phone_number && (
+            <PlaceInformation type="PHONE" content={place.phone_number} />
           )}
-          {place.opening_hours && (
+          {/* {place.opening_hours && (
             <PlaceInformation
               type="HOURS"
               important={
                 (place.opening_hours.open_now && "현재 영업 중") || undefined
               }
-              content={getDateStringFromPeriods(place.opening_hours)}
+              content={
+                getDateStringFromPeriods(place.opening_hours) || "영업 시간"
+              }
             />
-          )}
-          {place.website && (
+          )} */}
+          {/* {place.website && (
             <PlaceInformation type="WEBSITE" content={place.website} />
-          )}
-          {savedPlace && (
+          )} */}
+          {myPlace && (
             <div className="review">
               <p>저장된 리뷰</p>
               <PlaceReview
-                place={savedPlace}
+                place={myPlace}
                 onEditCallback={function () {
                   setIsSaving(true);
                   setIsEdit(true);
@@ -170,6 +170,13 @@ function getDateStringFromPeriods(periods: google.maps.places.OpeningHours) {
     default:
       dayString = "";
   }
+  console.log(`peri`);
+  console.log(weekday);
+  console.log(periods);
+  if (!periods.periods[weekday]) {
+    return "영업 시간 정보가 없습니다.";
+  }
+  console.log(periods.periods[weekday]);
   const openHour = `${periods.periods[weekday].open.time}`;
   const closeHour = `${periods.periods[weekday].close?.time}`;
 

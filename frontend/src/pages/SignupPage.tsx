@@ -18,7 +18,7 @@ export function SignupPage() {
     const request: SignupRequest = {
       name,
       email,
-      _password: password,
+      password: password,
     };
 
     doSignup(request)
@@ -28,7 +28,7 @@ export function SignupPage() {
       .then(() =>
         doLogin({
           email: request.email,
-          _password: request._password,
+          password: request.password,
         }).then(() => {
           history.push(PATH.MAIN);
         })

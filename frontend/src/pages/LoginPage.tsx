@@ -1,38 +1,26 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import EMAIL_ICON from "../images/icons/icon_email.png";
 import LOCK_ICON from "../images/icons/icon_lock.png";
-import { PATH } from "../constants";
 import { doLogin, getUser } from "../api";
-import { SetUserContext } from "../ContextProvicer";
+import { DEFAULT_PATH, SIGNUP_PATH } from "../constants";
 
 export function LoginPage() {
   const history = useHistory();
-  const setUser = useContext(SetUserContext);
-
   const [title, setTitle] = useState("이메일 계정으로 로그인");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    getUser().then((user) => {
-      if (user) {
-        history.push(PATH.MAIN);
-      }
-    });
-  }, []);
+  function goMain() {
+    history.push(DEFAULT_PATH);
+  }
 
   function handleLogin() {
-    const request: LoginRequest = { email, _password: password };
-    doLogin(request).then(async () => {
-      const user = await getUser();
-      if (user && setUser) {
-        console.log(`login passed / email : ${user.email}`);
-        setUser(user);
-        history.push(PATH.DEFAULT);
-      }
-    });
+    const request: LoginRequest = { email, password };
+    doLogin(request)
+      .then(goMain)
+      .catch((err) => setTitle(err));
   }
 
   return (
@@ -64,7 +52,7 @@ export function LoginPage() {
           계정이 없으신가요?{" "}
           <button
             onClick={() => {
-              history.push(PATH.SIGNUP);
+              history.push(SIGNUP_PATH);
             }}
           >
             회원가입

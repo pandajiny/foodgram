@@ -1,7 +1,6 @@
 import { app } from "./app";
+import { API_PORT } from "./constants";
 
-const PORT = 5001;
-
-app.listen(PORT, () => {
-  console.log(`server is running at ${PORT}`);
+app.listen(API_PORT, () => {
+  console.log(`server is running at ${API_PORT}`);
 });

@@ -1,7 +1,7 @@
 import React from "react";
-import { SavedPlace } from "./SavedPlace";
+import { SavedPlace as SavedPlace } from "./SavedPlace";
 
-export function RecommendPlaces(props: { places: SavedPlace[] }) {
+export function RecommendPlaces(props: { places: UserPlace[] }) {
   const { places } = props;
   console.log(places);
   return (

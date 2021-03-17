@@ -1,9 +1,10 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { PATH } from "../../constants";
+import { doLogout } from "../../api";
+import { LOGIN_PATH } from "../../constants";
 import ICON_PROFILE from "../../images/icons/icon_profile_white.png";
 
-export function UserState(props: { user?: User | null; doLogout: () => void }) {
+export function UserState(props: { user?: User | null }) {
   const { user } = props;
   const history = useHistory();
   if (user == undefined) {
@@ -18,7 +19,9 @@ export function UserState(props: { user?: User | null; doLogout: () => void }) {
           <div className="account-container">
             <img className="icon" src={ICON_PROFILE}></img>
             <label>{user.email}</label>
-            <button onClick={props.doLogout}>LOGOUT</button>
+            <button onClick={() => doLogout().then(location.reload)}>
+              LOGOUT
+            </button>
           </div>
         </>
       ) : (
@@ -26,7 +29,7 @@ export function UserState(props: { user?: User | null; doLogout: () => void }) {
           <h3>아직 로그인 되어있지 않습니다.</h3>
           <button
             onClick={() => {
-              history.push(PATH.LOGIN);
+              history.push(LOGIN_PATH);
             }}
           >
             로그인

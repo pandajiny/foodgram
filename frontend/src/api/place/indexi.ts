@@ -1,19 +1,18 @@
 import { doGetRequest, doPostRequest, doPutRequest, serverUrl } from "..";
+import { FoodgramService } from "../../App";
 
 export async function getPlaceDetail(args: {
   placeId: string;
-}): Promise<google.maps.places.PlaceResult> {
+}): Promise<Place> {
   const { placeId } = args;
-  const url = `${serverUrl}/places/${placeId}`;
-
-  const result = await doGetRequest<google.maps.places.PlaceResult>(url);
-
-  return result;
+  return await FoodgramService.get<Place>(`/places/${placeId}`).then(
+    (resp) => resp.data
+  );
 }
 
 export async function getSavedPlaces(userId: string) {
   const url = `${serverUrl}/users/${userId}/places`;
-  const result = await doGetRequest<SavedPlace[]>(url);
+  const result = await doGetRequest<UserPlace[]>(url);
 
   return result;
 }
@@ -33,18 +32,14 @@ export async function getSavedPlace(
 
 // POST /users/:userID/places
 // result : ActionResult
-export async function savePlace(
-  request: SavePlaceRequest
-): Promise<ActionResult> {
-  const url = `${serverUrl}/users/${request.userId}/places`;
-  const body: SavePlaceRequestBody = request;
-
-  const result = await doPostRequest<ActionResult>({
-    url,
-    body,
-  });
-
-  return result;
+export async function savePlace(request: RequestSavePlace) {
+  console.log(request);
+  await FoodgramService.post(`/users/${request.userId}/places`, request).catch(
+    (err) => {
+      console.error(err);
+      throw `Cannot save place`;
+    }
+  );
 }
 
 export async function editSavedPlace(place: SavedPlace) {
