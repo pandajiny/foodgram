@@ -1,6 +1,6 @@
-import mysql, { ConnectionOptions } from "mysql2/promise";
+import mysql from "mysql2/promise";
 import uniqueString from "unique-string";
-import { DB_PASSWORD } from "../../constants";
+import { dbOptions } from "../../constants";
 import { InternalException } from "../http";
 
 function getUniqueString(): string {
@@ -10,14 +10,6 @@ function getUniqueString(): string {
 function getCurrentTime(): number {
   return new Date().getTime();
 }
-
-export const dbOptions: ConnectionOptions = {
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  database: "foodgram_db",
-  password: DB_PASSWORD,
-};
 
 async function get<T>(query: string): Promise<T[]> {
   const conn = await mysql.createConnection(dbOptions);

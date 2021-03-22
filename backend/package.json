@@ -38,8 +38,10 @@
   "type": "commonjs",
   "scripts": {
     "compile": "tsc && node dist/index.js",
-    "dev": "nodemon -e ts --exec \"npm run compile\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "set NODE_ENV=dev && nodemon -e ts --exec \"npm run compile\"",
+    "build": "tsc && docker build -t foodgram-service .",
+    "predeploy": "npm run build",
+    "deploy": "docker tag foodgram-service asia.gcr.io/auth-service-303714/foodgram-service && docker push asia.gcr.io/auth-service-303714/foodgram-service",
     "update-types": "cd src/types && (git add . && git commit -m '' && git push) & git pull"
   },
   "author": "",

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {git p
+  "scripts": {
     "dev": "set NODE_ENV=dev && parcel src/public/index.html",
     "build": "parcel build -d ../docs src/public/index.html && copyfiles ./CNAME ../docs",
     "predeploy": "npm run build",
