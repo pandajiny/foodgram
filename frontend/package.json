@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "build": "parcel build -d ../docs src/public/index.html",
-    "dev": "parcel src/public/index.html",
+  "scripts": {git p
+    "dev": "set NODE_ENV=dev && parcel src/public/index.html",
+    "build": "parcel build -d ../docs src/public/index.html && copyfiles ./CNAME ../docs",
+    "predeploy": "npm run build",
+    "deploy": "git add ../docs && git commit -m \"update deploy\" && git push",
     "compile": "tsc --noEmit",
     "compile:w": "tsc --noEmit -w"
   },
