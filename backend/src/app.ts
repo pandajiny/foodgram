@@ -8,6 +8,7 @@ import { exceptionHandler } from "./modules/http";
 import { AutocompletesRouter as AutocompleteRouter } from "./routers/autocompletes";
 import { PlaceRouter } from "./routers/places";
 import bodyParser from "body-parser";
+import { authGuard } from "./guards";
 
 export const app = express();
 
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(authGuard);
 app.use("/users", UserRouter);
 app.use("/autocompletes", AutocompleteRouter);
 app.use("/places", PlaceRouter);

@@ -10,11 +10,6 @@ interface Certificates {
 
 async function bootstrap() {
   const credentials = getCredentials();
-
-  app.listen(API_PORT, () => {
-    console.log(`server is running at ${API_PORT}`);
-  });
-
   if (credentials) {
     console.log(`running https server :${API_PORT}`);
     https.createServer(credentials, app).listen(API_PORT);
